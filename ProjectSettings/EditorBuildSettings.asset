@@ -11,4 +11,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Level.unity
     guid: d9fcb6a50612bb04384f827ab2331b7d
+  - enabled: 1
+    path: Assets/Scenes/CarSave.unity
+    guid: 858ef54a0c0c2df488267ec08978fef9
   m_configObjects: {}

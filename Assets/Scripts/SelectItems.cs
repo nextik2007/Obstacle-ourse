@@ -21,8 +21,8 @@ public class SelectItems : MonoBehaviour
 
     private void Start()
     {
-        _money = PlayerPrefs.HasKey(MONEY_TAG) ? PlayerPrefs.GetInt(MONEY_TAG) : 100;
-        _moneyText.text = $"Денег: {_money}$";
+        //_money = PlayerPrefs.HasKey(MONEY_TAG) ? PlayerPrefs.GetInt(MONEY_TAG) : 100;
+        //_moneyText.text = $"Денег: {_money}$";
 
         _itemParent = GetComponent<Transform>();
         _items[0].IsPurchased = true;
@@ -68,15 +68,15 @@ public class SelectItems : MonoBehaviour
 
     private void UpdateItem()
     {
-        _selectText.text = _savedItemIndex == _currentIndex ? "Выбрано" : "Выбрать";
+        _selectText.text = _savedItemIndex == _currentIndex ? "ВЫБРАНО" : "ВЫБРАТЬ";
 
-        if (_currentIndex < _items.Count)
-        {
-            _buyButton.SetActive(_items[_currentIndex].IsPurchased == false);
-            _buyButtonText.text = $"Цена: {_items[_currentIndex].Cost}$";
-        }
-        else
-            _buyButton.SetActive(false);
+        //if (_currentIndex < _items.Count)
+        //{
+        //    _buyButton.SetActive(_items[_currentIndex].IsPurchased == false);
+        //    _buyButtonText.text = $"Цена: {_items[_currentIndex].Cost}$";
+        //}
+        //else
+        //    _buyButton.SetActive(false);
     }
 
     public void BuyItem()
@@ -99,7 +99,7 @@ public class SelectItems : MonoBehaviour
         PlayerPrefs.SetInt(_key, _currentIndex);
 
         _savedItemIndex = _currentIndex;
-        _selectText.text = "Выбрано";
+        _selectText.text = "ВЫБРАНО";
     }
 }
 
