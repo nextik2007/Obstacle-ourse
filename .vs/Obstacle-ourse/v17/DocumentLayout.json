@@ -3,11 +3,11 @@
   "WorkspaceRootPath": "C:\\Users\\Kaizen\\Documents\\GitHub\\Obstacle-ourse\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{31FF683A-9EF2-66AE-16D2-1E8B9BC1AC13}|Assembly-CSharp.csproj|C:\\Users\\Kaizen\\Documents\\GitHub\\Obstacle-ourse\\assets\\scripts\\camera.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{31FF683A-9EF2-66AE-16D2-1E8B9BC1AC13}|Assembly-CSharp.csproj|c:\\users\\kaizen\\documents\\github\\obstacle-ourse\\assets\\scripts\\camera.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{31FF683A-9EF2-66AE-16D2-1E8B9BC1AC13}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\camera.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{31FF683A-9EF2-66AE-16D2-1E8B9BC1AC13}|Assembly-CSharp.csproj|c:\\users\\kaizen\\documents\\github\\obstacle-ourse\\assets\\scripts\\selectitems.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{31FF683A-9EF2-66AE-16D2-1E8B9BC1AC13}|Assembly-CSharp.csproj|C:\\Users\\Kaizen\\Documents\\GitHub\\Obstacle-ourse\\assets\\scripts\\selectitems.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{31FF683A-9EF2-66AE-16D2-1E8B9BC1AC13}|Assembly-CSharp.csproj|solutionrelative:assets\\scripts\\selectitems.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
@@ -46,7 +46,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 6,
+          "SelectedChildIndex": 3,
           "Children": [
             {
               "$type": "Document",
@@ -58,8 +58,7 @@
               "RelativeToolTip": "Assets\\Scripts\\SelectItems.cs",
               "ViewState": "AgIAACIAAAAAAAAAAAAgwBoAAAAIAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-01-21T10:39:40.375Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-01-21T10:39:40.375Z"
             },
             {
               "$type": "Document",
@@ -84,6 +83,19 @@
               "ViewState": "AgIAAKMAAAAAAAAAAIAwwLYAAAAIAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-01-21T10:09:32.038Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Camera.cs",
+              "DocumentMoniker": "C:\\Users\\Kaizen\\Documents\\GitHub\\Obstacle-ourse\\Assets\\Scripts\\Camera.cs",
+              "RelativeDocumentMoniker": "Assets\\Scripts\\Camera.cs",
+              "ToolTip": "C:\\Users\\Kaizen\\Documents\\GitHub\\Obstacle-ourse\\Assets\\Scripts\\Camera.cs",
+              "RelativeToolTip": "Assets\\Scripts\\Camera.cs",
+              "ViewState": "AgIAAKQAAAAAAAAAAAAiwMsAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-01-21T09:14:26.435Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
@@ -119,19 +131,6 @@
               "RelativeToolTip": "Assets\\Scripts\\EngineSound.cs",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-01-21T09:33:37.011Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "Camera.cs",
-              "DocumentMoniker": "C:\\Users\\Kaizen\\Documents\\GitHub\\Obstacle-ourse\\Assets\\Scripts\\Camera.cs",
-              "RelativeDocumentMoniker": "Assets\\Scripts\\Camera.cs",
-              "ToolTip": "C:\\Users\\Kaizen\\Documents\\GitHub\\Obstacle-ourse\\Assets\\Scripts\\Camera.cs",
-              "RelativeToolTip": "Assets\\Scripts\\Camera.cs",
-              "ViewState": "AgIAACoAAAAAAAAAAAAowHQAAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-01-21T09:14:26.435Z",
-              "EditorCaption": ""
             },
             {
               "$type": "Document",

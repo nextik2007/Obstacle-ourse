@@ -1,117 +1,204 @@
-using System.Collections.Generic;
 using UnityEngine;
+using System.Collections;
 
-public class CarCameraScript : MonoBehaviour
+namespace RootMotion
 {
-    public Transform _itemParent; // –одительский Transform, содержащий автомобили
-    public float distance = 6.4f;
-    public float height = 1.4f;
-    public float rotationDamping = 3.0f;
-    public float heightDamping = 2.0f;
-    public float zoomRatio = 0.5f;
-    public float defaultFOV = 60f;
-
-    private Vector3 rotationVector;
-    private Transform targetCar; // “екущий автомобиль, за которым следит камера
-
-
-    void Start()
+    public class CameraController : MonoBehaviour
     {
-        // »щем активные автомобили в начале игры
-        FindActiveCar();
-    }
-
-    void LateUpdate()
-    {
-        if (targetCar == null)
+        [System.Serializable]
+        public enum UpdateMode
         {
-            return; // Ќе делаем ничего, если нет активного автомобил€
+            Update,
+            FixedUpdate,
+            LateUpdate,
+            FixedLateUpdate
         }
 
+        public Transform target;
+        public Transform rotationSpace;
+        public UpdateMode updateMode = UpdateMode.LateUpdate;
+        public bool lockCursor = true;
 
-        float wantedAngle = rotationVector.y;
-        float wantedHeight = targetCar.position.y + height;
-        float myAngle = transform.eulerAngles.y;
-        float myHeight = transform.position.y;
+        [Header("Position")]
+        public bool smoothFollow;
+        public Vector3 offset = new Vector3(0, 1.5f, 0.5f);
+        public float followSpeed = 10f;
 
-        myAngle = Mathf.LerpAngle(myAngle, wantedAngle, rotationDamping * Time.deltaTime);
-        myHeight = Mathf.Lerp(myHeight, wantedHeight, heightDamping * Time.deltaTime);
+        [Header("Rotation")]
+        public float rotationSensitivity = 3.5f;
+        public float yMinLimit = -20;
+        public float yMaxLimit = 80;
+        public bool rotateAlways = true;
+        public bool rotateOnLeftButton;
+        public bool rotateOnRightButton;
+        public bool rotateOnMiddleButton;
 
-        Quaternion currentRotation = Quaternion.Euler(0, myAngle, 0);
-        transform.position = targetCar.position;
-        transform.position -= currentRotation * Vector3.forward * distance;
-        Vector3 temp = transform.position;
-        temp.y = myHeight;
-        transform.position = temp;
-        transform.LookAt(targetCar);
-    }
+        [Header("Distance")]
+        public float distance = 10.0f;
+        public float minDistance = 4;
+        public float maxDistance = 10;
+        public float zoomSpeed = 10f;
+        public float zoomSensitivity = 1f;
 
+        [Header("Blocking")]
+        public LayerMask blockingLayers;
+        public float blockingRadius = 1f;
+        public float blockingSmoothTime = 0.1f;
+        public float blockingOriginOffset;
+        [Range(0f, 1f)] public float blockedOffset = 0.5f;
 
-    void FixedUpdate()
-    {
-        if (targetCar == null)
+        public float x { get; private set; }
+        public float y { get; private set; }
+        public float distanceTarget { get; private set; }
+
+        private Vector3 targetDistance, position;
+        private Quaternion rotation = Quaternion.identity;
+        private Vector3 smoothPosition;
+        private Camera cam;
+        private bool fixedFrame;
+        private float fixedDeltaTime;
+        private Quaternion r = Quaternion.identity;
+        private Vector3 lastUp;
+        private float blockedDistance = 10f, blockedDistanceV;
+
+        public void SetAngles(Quaternion rotation)
         {
-
-            return; // Ќе делаем ничего, если нет активного автомобил€
+            Vector3 euler = rotation.eulerAngles;
+            this.x = euler.y;
+            this.y = euler.x;
         }
 
-        Vector3 localVelocity = targetCar.InverseTransformDirection(targetCar.GetComponent<Rigidbody>().velocity);
-
-        if (localVelocity.z < -0.1f)
+        public void SetAngles(float yaw, float pitch)
         {
-            Vector3 temp = rotationVector;
-            temp.y = targetCar.eulerAngles.y + 180;
-            rotationVector = temp;
-        }
-        else
-        {
-            Vector3 temp = rotationVector;
-            temp.y = targetCar.eulerAngles.y;
-            rotationVector = temp;
-        }
-        float acc = targetCar.GetComponent<Rigidbody>().velocity.magnitude;
-        GetComponent<Camera>().fieldOfView = defaultFOV + acc * zoomRatio * Time.deltaTime;
-    }
-
-
-
-    // ћетод дл€ поиска активного автомобил€
-    void FindActiveCar()
-    {
-        if (_itemParent == null)
-        {
-            Debug.LogWarning("CarCameraScript: _itemParent is not assigned. Camera will not function correctly.");
-            return;
+            this.x = yaw;
+            this.y = pitch;
         }
 
-        // ѕолучаем список всех дочерних элементов (потенциальных автомобилей)
-        Transform[] children = new Transform[_itemParent.childCount];
-        for (int i = 0; i < _itemParent.childCount; i++)
+        protected virtual void Awake()
         {
-            children[i] = _itemParent.GetChild(i);
+            Vector3 angles = transform.eulerAngles;
+            x = angles.y;
+            y = angles.x;
+
+            distanceTarget = distance;
+            smoothPosition = transform.position;
+
+            cam = GetComponent<Camera>();
+
+            lastUp = rotationSpace != null ? rotationSpace.up : Vector3.up;
         }
 
-        targetCar = null;
-
-        // »щем первый активный автомобиль в списке дочерних элементов
-        foreach (Transform child in children)
+        protected virtual void Update()
         {
-            if (child.gameObject.activeInHierarchy && child.GetComponent<Rigidbody>() != null)
+            if (updateMode == UpdateMode.Update) UpdateTransform();
+        }
+
+        protected virtual void FixedUpdate()
+        {
+            fixedFrame = true;
+            fixedDeltaTime += Time.deltaTime;
+            if (updateMode == UpdateMode.FixedUpdate) UpdateTransform();
+        }
+
+        protected virtual void LateUpdate()
+        {
+            UpdateInput();
+
+            if (updateMode == UpdateMode.LateUpdate) UpdateTransform();
+
+            if (updateMode == UpdateMode.FixedLateUpdate && fixedFrame)
             {
-                targetCar = child;
-                break;
+                UpdateTransform(fixedDeltaTime);
+                fixedDeltaTime = 0f;
+                fixedFrame = false;
+            }
+        }
+
+        public void UpdateInput()
+        {
+            if (!cam.enabled) return;
+
+            Cursor.lockState = lockCursor ? CursorLockMode.Locked : CursorLockMode.None;
+            Cursor.visible = lockCursor ? false : true;
+
+            bool rotate = rotateAlways || (rotateOnLeftButton && Input.GetMouseButton(0)) || (rotateOnRightButton && Input.GetMouseButton(1)) || (rotateOnMiddleButton && Input.GetMouseButton(2));
+
+            if (rotate)
+            {
+                x += Input.GetAxis("Mouse X") * rotationSensitivity;
+                y = ClampAngle(y - Input.GetAxis("Mouse Y") * rotationSensitivity, yMinLimit, yMaxLimit);
             }
 
+            distanceTarget = Mathf.Clamp(distanceTarget + zoomAdd, minDistance, maxDistance);
         }
-        if (targetCar == null)
-        {
-            Debug.LogWarning("CarCameraScript: No active car with Rigidbody found in _itemParent.");
-        }
-    }
 
-    void Update()
-    {
-        // ѕоиск активной машины
-        FindActiveCar();
+        public void UpdateTransform()
+        {
+            UpdateTransform(Time.deltaTime);
+        }
+
+        public void UpdateTransform(float deltaTime)
+        {
+            if (!cam.enabled) return;
+
+            rotation = Quaternion.AngleAxis(x, Vector3.up) * Quaternion.AngleAxis(y, Vector3.right);
+
+            if (rotationSpace != null)
+            {
+                r = Quaternion.FromToRotation(lastUp, rotationSpace.up) * r;
+                rotation = r * rotation;
+
+                lastUp = rotationSpace.up;
+
+            }
+
+            if (target != null)
+            {
+                distance += (distanceTarget - distance) * zoomSpeed * deltaTime;
+
+                if (!smoothFollow) smoothPosition = target.position;
+                else smoothPosition = Vector3.Lerp(smoothPosition, target.position, deltaTime * followSpeed);
+
+                Vector3 t = smoothPosition + rotation * offset;
+                Vector3 f = rotation * -Vector3.forward;
+
+                if (blockingLayers != -1)
+                {
+                    RaycastHit hit;
+                    if (Physics.SphereCast(t - f * blockingOriginOffset, blockingRadius, f, out hit, blockingOriginOffset + distanceTarget - blockingRadius, blockingLayers))
+                    {
+                        blockedDistance = Mathf.SmoothDamp(blockedDistance, hit.distance + blockingRadius * (1f - blockedOffset) - blockingOriginOffset, ref blockedDistanceV, blockingSmoothTime);
+                    }
+                    else blockedDistance = distanceTarget;
+
+                    distance = Mathf.Min(distance, blockedDistance);
+                }
+
+                position = t + f * distance;
+
+                transform.position = position;
+            }
+
+            transform.rotation = rotation;
+        }
+
+        private float zoomAdd
+        {
+            get
+            {
+                float scrollAxis = Input.GetAxis("Mouse ScrollWheel");
+                if (scrollAxis > 0) return -zoomSensitivity;
+                if (scrollAxis < 0) return zoomSensitivity;
+                return 0;
+            }
+        }
+
+        private float ClampAngle(float angle, float min, float max)
+        {
+            if (angle < -360) angle += 360;
+            if (angle > 360) angle -= 360;
+            return Mathf.Clamp(angle, min, max);
+        }
+
     }
 }
